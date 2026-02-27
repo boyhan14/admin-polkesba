@@ -51,6 +51,8 @@ export default function Settings() {
       setProfilePhoto(dataUrl)
       try {
         localStorage.setItem(STORAGE_PHOTO, dataUrl)
+        // notify other parts of the app that profile photo changed
+        window.dispatchEvent(new Event('profile_photo_updated'))
       } catch (err) {
         console.warn('Foto terlalu besar untuk disimpan di browser.', err)
       }
@@ -62,6 +64,7 @@ export default function Settings() {
   const handleHapusFoto = () => {
     setProfilePhoto(null)
     localStorage.removeItem(STORAGE_PHOTO)
+    window.dispatchEvent(new Event('profile_photo_updated'))
   }
 
   const handleSimpan = () => {
@@ -79,6 +82,8 @@ export default function Settings() {
     }
     try {
       localStorage.setItem(STORAGE_PROFILE, JSON.stringify(toSave))
+      // notify other parts of the app that profile info (name/role/email) changed
+      window.dispatchEvent(new Event('profile_info_updated'))
       setForm((prev) => ({ ...prev, password: '', confirmPassword: '' }))
       setSaveMessage({ type: 'success', text: 'Data berhasil disimpan.' })
       setTimeout(() => setSaveMessage(null), 3000)

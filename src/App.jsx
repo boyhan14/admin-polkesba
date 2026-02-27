@@ -16,11 +16,13 @@ import ChatLangsung from './pages/ChatLangsung'
 import Settings from './pages/Settings'
 
 function App() {
+  console.log('App: render start')
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem('admin_polkesba_logged') === 'true'
   })
 
   useEffect(() => {
+    console.log('App: useEffect mount, isLoggedIn=', isLoggedIn)
     const handleLogoutEvent = () => setIsLoggedIn(false)
     window.addEventListener('logout', handleLogoutEvent)
     return () => window.removeEventListener('logout', handleLogoutEvent)

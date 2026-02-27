@@ -1,9 +1,61 @@
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 
 export default function Layout({ onLogout }) {
   const navigate = useNavigate()
   const location = useLocation()
   const path = location.pathname
+
+  const STORAGE_PHOTO = 'admin_polkesba_profile_photo'
+  const STORAGE_PROFILE = 'admin_polkesba_profile_info'
+  const [avatarPhoto, setAvatarPhoto] = useState(() => {
+    try {
+      return localStorage.getItem(STORAGE_PHOTO) || null
+    } catch (_) {
+      return null
+    }
+  })
+  const [profileName, setProfileName] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_PROFILE)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        return parsed.nama ?? 'Sumanto'
+      }
+    } catch (_) {}
+    return 'Sumanto'
+  })
+
+  useEffect(() => {
+    const onUpdate = () => {
+      try {
+        setAvatarPhoto(localStorage.getItem(STORAGE_PHOTO) || null)
+      } catch (_) {
+        setAvatarPhoto(null)
+      }
+      try {
+        const saved = localStorage.getItem(STORAGE_PROFILE)
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          setProfileName(parsed.nama ?? 'Sumanto')
+        } else {
+          setProfileName('Sumanto')
+        }
+      } catch (_) {
+        setProfileName('Sumanto')
+      }
+    }
+    // custom events from Settings when photo or profile info changes
+    window.addEventListener('profile_photo_updated', onUpdate)
+    window.addEventListener('profile_info_updated', onUpdate)
+    // also listen to storage events (useful across tabs)
+    window.addEventListener('storage', onUpdate)
+    return () => {
+      window.removeEventListener('profile_photo_updated', onUpdate)
+      window.removeEventListener('profile_info_updated', onUpdate)
+      window.removeEventListener('storage', onUpdate)
+    }
+  }, [])
 
   const isActive = (p) => path === p || (p !== '/' && path.startsWith(p))
   const isDataVizOpen = path.startsWith('/data-visualisasi')
@@ -50,8 +102,15 @@ export default function Layout({ onLogout }) {
       <div className="layout-body">
         <aside className="sidebar">
           <div className="sidebar-user">
-            <div className="avatar"><i className="fa fa-user" /></div>
-            <span className="sidebar-name">Sumanto</span>
+            <div className="avatar">
+              {/** show stored profile photo if available, otherwise fallback icon */}
+              {avatarPhoto ? (
+                <img src={avatarPhoto} alt="Avatar" />
+              ) : (
+                <i className="fa fa-user" />
+              )}
+            </div>
+            <span className="sidebar-name">{profileName}</span>
             <span className="sidebar-status"><span className="status-dot" /> Online</span>
           </div>
           <div className="sidebar-search">

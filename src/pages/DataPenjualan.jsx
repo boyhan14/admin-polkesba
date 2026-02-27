@@ -29,9 +29,9 @@ const tahunData = [
 ]
 const pieMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const pieColors = ['#ff9800', '#2196F3', '#5bc0de', '#4CAF50', '#ffeb3b', '#9c27b0', '#f44336', '#00bcd4', '#8bc34a', '#e91e63', '#673ab7', '#009688']
-const pieData = useMemo(() => pieMonths.map((m, i) => ({ name: m, value: +(7 + Math.random() * 4).toFixed(2) })), [])
 
 export default function DataPenjualan() {
+  const pieData = useMemo(() => pieMonths.map((m, i) => ({ name: m, value: +(7 + Math.random() * 4).toFixed(2) })), [])
   return (
     <div className="data-viz-page">
       <div className="page-title">
